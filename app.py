@@ -104,7 +104,7 @@ elif page == "Visualization 📊":
         "Fare by Hour 🕐", "Correlation 🔥"
     ])
 
-   with tab1:
+    with tab1:
         st.markdown("#### How much do rides cost?")
         fig, ax = plt.subplots()
         sns.histplot(df["fare_amount"], bins=40, kde=True, color=UBER_BLUE, ax=ax)
