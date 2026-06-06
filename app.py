@@ -11,6 +11,20 @@ st.set_page_config(
     page_icon="🚕",
 )
 
+# Shared color scheme
+UBER_BLUE   = "#276EF1"
+UBER_GREEN  = "#06C167"
+UBER_DARK   = "#142328"
+BLUE_SEQ    = "Blues"   # for the heatmap
+
+# Make every matplotlib/seaborn chart use the same look
+sns.set_theme(style="whitegrid")
+plt.rcParams["axes.titlesize"] = 13
+plt.rcParams["axes.titleweight"] = "bold"
+plt.rcParams["axes.labelsize"] = 11
+plt.rcParams["axes.edgecolor"] = "#cccccc"
+plt.rcParams["figure.autolayout"] = True   # stops labels getting cut off
+
 ## Step 01 - Sidebar navigation
 st.sidebar.title("Uber NYC – Fare Analysis 🚕")
 page = st.sidebar.selectbox(
