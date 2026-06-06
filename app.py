@@ -151,4 +151,82 @@ elif page == "Visualization 📊":
 
 elif page == "Prediction 🔮":
     st.subheader("03 Prediction 🔮")
-    st.write("")
+    st.markdown("We train a **Linear Regression** model to predict the fare of a ride "
+                "from things we know *before* the trip starts.")
+
+    from sklearn.model_selection import train_test_split
+    from sklearn.linear_model import LinearRegression
+    from sklearn import metrics
+
+    # The features (X) we predict FROM, and the target (y) we predict
+    features = ["distance_miles", "passenger_count", "hour", "day_of_week"]
+    X = df[features]
+    y = df["fare_amount"]
+
+    # Split into training and testing data
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42)
+
+    # Train the model
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+
+    # --- How accurate is it? ---
+    st.markdown("#### How accurate is the model?")
+    r2   = metrics.r2_score(y_test, predictions)
+    mae  = metrics.mean_absolute_error(y_test, predictions)
+    rmse = np.sqrt(metrics.mean_squared_error(y_test, predictions))
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("R² (variance explained)", f"{r2:.3f}")
+    c2.metric("Average error (MAE)", f"${mae:.2f}")
+    c3.metric("Typical error (RMSE)", f"${rmse:.2f}")
+    st.caption(f"On average the prediction is off by about ${mae:.2f}. "
+               f"An R² of {r2:.2f} means the model explains about {r2*100:.0f}% "
+               "of why fares differ.")
+
+    # The driving variables
+    st.markdown("#### What drives the prediction?")
+    coef_df = pd.DataFrame({
+        "Feature": features,
+        "Dollars added per unit": model.coef_
+    }).sort_values("Dollars added per unit", key=lambda s: s.abs(), ascending=False)
+    st.dataframe(coef_df, hide_index=True, use_container_width=True)
+    st.caption(f"Each extra mile adds about ${model.coef_[0]:.2f} to the fare. "
+               "Distance is by far the biggest driver — exactly what the data showed us.")
+
+    # Predicted vs actual
+    st.markdown("#### Predicted vs actual fares")
+    sample = pd.DataFrame({"Actual": y_test.values, "Predicted": predictions}) \
+                .sample(min(2000, len(y_test)), random_state=1)
+    fig, ax = plt.subplots()
+    ax.scatter(sample["Actual"], sample["Predicted"], alpha=0.3, color=UBER_BLUE)
+    ax.plot([sample["Actual"].min(), sample["Actual"].max()],
+            [sample["Actual"].min(), sample["Actual"].max()],
+            "--", color=UBER_GREEN, linewidth=2)
+    ax.set_xlabel("Actual fare (dollars)")
+    ax.set_ylabel("Predicted fare (dollars)")
+    ax.set_title("Points near the green line are good predictions")
+    st.pyplot(fig)
+    st.caption("The model tracks normal rides well. The spread at higher fares is surge "
+               "pricing and airport flat-rates, which a straight line cannot fully capture.")
+
+    # Try it yourself 
+    st.markdown("#### Try it yourself")
+    DAY_NAMES = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+    c1, c2 = st.columns(2)
+    with c1:
+        distance   = st.slider("Trip distance (miles)", 0.5, 30.0, 3.0, 0.5)
+        passengers = st.slider("Passengers", 1, 6, 1)
+    with c2:
+        hour      = st.slider("Hour of day", 0, 23, 18)
+        day_label = st.selectbox("Day of week", DAY_NAMES, index=4)
+    day_of_week = DAY_NAMES.index(day_label)
+
+    new_trip = pd.DataFrame([[distance, passengers, hour, day_of_week]], columns=features)
+    predicted_fare = max(model.predict(new_trip)[0], 2.5)
+
+    st.success(f"Estimated fare: ${predicted_fare:.2f}")
+    st.caption(f"For a {distance:.1f}-mile trip with {passengers} passenger(s) "
+               f"on a {day_label} at {hour:02d}:00.")
