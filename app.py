@@ -67,7 +67,9 @@ df = df.dropna(subset=["hour"])
 if page == "Introduction 📘":
     st.title("🚕 Predicting Uber Fares in New York City")
     st.subheader("01 Introduction 📘")
-
+    st.caption(f"Data spans {df['year'].min()}–{df['year'].max()} "
+           f"(about {2026 - int(df['year'].max())} years old).")
+    
     st.markdown("### The Business Problem")
     st.markdown("**Goal:** predict the price of an Uber ride in NYC from trip distance, time of day, and passengers.")
 
