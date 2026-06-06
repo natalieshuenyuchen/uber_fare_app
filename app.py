@@ -109,9 +109,9 @@ elif page == "Visualization 📊":
         fig, ax = plt.subplots()
         sns.histplot(df["fare_amount"], bins=40, kde=True, color=UBER_BLUE, ax=ax)
         ax.set_xlabel("Fare (USD)")
-        ax.set_title("Most rides cost $5–$15")
+        ax.set_title("Most rides cost $5-$15")
         st.pyplot(fig)
-        st.caption("Typical rides are cheap and short. The small bumps near $50–$57 are fixed-price airport trips.")
+        st.caption("Typical rides are cheap and short. The small bumps near $50-$57 are fixed-price airport trips.")
 
     with tab2:
         st.markdown("#### Does distance drive the fare?")
