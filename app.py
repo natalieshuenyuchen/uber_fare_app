@@ -39,25 +39,26 @@ df = pd.read_csv("uber.csv")
 df = df.drop(columns=["Unnamed: 0", "key"], errors="ignore")
 df = df.dropna()
 
-# Create a DISTANCE column from the pickup/dropoff coordinates
+# Distance column from coordinates
 def haversine(lon1, lat1, lon2, lat2):
     lon1, lat1, lon2, lat2 = map(np.radians, [lon1, lat1, lon2, lat2])
     dlon = lon2 - lon1
     dlat = lat2 - lat1
     a = np.sin(dlat/2)**2 + np.cos(lat1)*np.cos(lat2)*np.sin(dlon/2)**2
-    return 3959 * 2 * np.arcsin(np.sqrt(a))   # distance in miles
+    return 3959 * 2 * np.arcsin(np.sqrt(a))
 
 df["distance_miles"] = haversine(
     df["pickup_longitude"], df["pickup_latitude"],
     df["dropoff_longitude"], df["dropoff_latitude"]
 )
 
-# Pull the HOUR and DAY out of the pickup time 
+# Time columns from pickup_datetime
 df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"], errors="coerce")
 df["hour"] = df["pickup_datetime"].dt.hour
-df["day_of_week"] = df["pickup_datetime"].dt.dayofweek   # Monday = 0
+df["day_of_week"] = df["pickup_datetime"].dt.dayofweek
+df["year"] = df["pickup_datetime"].dt.year      # <-- this is what your caption needs
 
-# Remove bad rows / outliers so the charts aren't ruined 
+# Remove outliers
 df = df[df["fare_amount"].between(2.5, 100)]
 df = df[df["passenger_count"].between(1, 6)]
 df = df[df["distance_miles"].between(0.1, 60)]
@@ -132,7 +133,7 @@ elif page == "Visualization 📊":
         fig, ax = plt.subplots()
         sns.lineplot(x=by_hour.index, y=by_hour.values, marker="o",
                      color=UBER_GREEN, linewidth=2.5, ax=ax)
-        ax.set_xlabel("Hour of day (0–23)")
+        ax.set_xlabel("Hour of day (0-23)")
         ax.set_ylabel("Average fare (USD)")
         ax.set_title("Early-morning rides cost the most")
         st.pyplot(fig)
@@ -146,7 +147,7 @@ elif page == "Visualization 📊":
                     cmap=BLUE_SEQ, ax=ax)
         ax.set_title("Distance is the strongest predictor of fare (0.89)")
         st.pyplot(fig)
-        st.caption("Distance correlates 0.89 with fare — far higher than anything else.")
+        st.caption("Distance correlates 0.89 with fare far higher than anything else.")
 
 elif page == "Prediction 🔮":
     st.subheader("03 Prediction 🔮")
