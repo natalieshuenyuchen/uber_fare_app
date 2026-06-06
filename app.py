@@ -104,37 +104,47 @@ elif page == "Visualization 📊":
         "Fare by Hour 🕐", "Correlation 🔥"
     ])
 
-    with tab1:
+   with tab1:
         st.markdown("#### How much do rides cost?")
         fig, ax = plt.subplots()
-        sns.histplot(df["fare_amount"], bins=40, kde=True, ax=ax)
+        sns.histplot(df["fare_amount"], bins=40, kde=True, color=UBER_BLUE, ax=ax)
         ax.set_xlabel("Fare (USD)")
+        ax.set_title("Most rides cost $5–$15")
         st.pyplot(fig)
+        st.caption("Typical rides are cheap and short. The small bumps near $50–$57 are fixed-price airport trips.")
 
     with tab2:
         st.markdown("#### Does distance drive the fare?")
         fig, ax = plt.subplots()
         sns.scatterplot(data=plot_df, x="distance_miles", y="fare_amount",
-                        alpha=0.3, ax=ax)
+                        alpha=0.3, color=UBER_BLUE, ax=ax)
         ax.set_xlabel("Trip distance (miles)")
         ax.set_ylabel("Fare (USD)")
+        ax.set_title("Fare rises almost linearly with distance")
         st.pyplot(fig)
+        st.caption("This near-straight-line relationship is exactly why linear regression fits this problem.")
 
     with tab3:
         st.markdown("#### When are rides most expensive?")
         by_hour = df.groupby("hour")["fare_amount"].mean()
         fig, ax = plt.subplots()
-        sns.lineplot(x=by_hour.index, y=by_hour.values, marker="o", ax=ax)
+        sns.lineplot(x=by_hour.index, y=by_hour.values, marker="o",
+                     color=UBER_GREEN, linewidth=2.5, ax=ax)
         ax.set_xlabel("Hour of day (0–23)")
         ax.set_ylabel("Average fare (USD)")
+        ax.set_title("Early-morning rides cost the most")
         st.pyplot(fig)
+        st.caption("The 5 AM spike is likely long airport runs before flights; evening rides are short and cheap.")
 
     with tab4:
         st.markdown("#### Correlation between numeric columns")
         df_numeric = df.select_dtypes(include=np.number)
         fig, ax = plt.subplots(figsize=(10, 8))
-        sns.heatmap(df_numeric.corr(), annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+        sns.heatmap(df_numeric.corr(), annot=True, fmt=".2f",
+                    cmap=BLUE_SEQ, ax=ax)
+        ax.set_title("Distance is the strongest predictor of fare (0.89)")
         st.pyplot(fig)
+        st.caption("Distance correlates 0.89 with fare — far higher than anything else.")
 
 elif page == "Prediction 🔮":
     st.subheader("03 Prediction 🔮")
