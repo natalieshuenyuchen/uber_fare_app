@@ -88,9 +88,9 @@ if page == "Introduction 📘":
     missing = df.isnull().sum()
     st.write(missing)
     if missing.sum() == 0:
-        st.success("✅ No missing values found")
+        st.success("No missing values found")
     else:
-        st.warning("⚠️ You have missing values")
+        st.warning("You have missing values")
 
     st.markdown("##### 📈 Summary Statistics")
     if st.button("Show Describe Table"):
