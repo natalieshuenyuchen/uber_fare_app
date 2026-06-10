@@ -67,7 +67,6 @@ df = df.dropna(subset=["hour"])
 ## Step 03 - Pages
 if page == "Introduction 📘":
     st.title("🚕 Predicting Uber Fares in New York City")
-    st.image("images.png", width=250)
     st.subheader("01 Introduction 📘")
     st.caption(f"Data spans {df['year'].min()}–{df['year'].max()} "
            f"(about {2026 - int(df['year'].max())} years old).")
