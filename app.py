@@ -81,8 +81,12 @@ if page == "Introduction 📘":
     col3.metric("Average fare", f"${df['fare_amount'].mean():.2f}")
 
     st.markdown("##### Data Preview")
+    view = st.radio("Show from:", ["Head (top)", "Tail (bottom)"], horizontal=True)
     rows = st.slider("Select a number of rows to display", 5, 20, 5)
-    st.dataframe(df.head(rows))
+    if view == "Head (top)":
+        st.dataframe(df.head(rows))
+    else:
+        st.dataframe(df.tail(rows))
 
     st.markdown("##### Missing values")
     missing = df.isnull().sum()
@@ -93,8 +97,7 @@ if page == "Introduction 📘":
         st.warning("You have missing values")
 
     st.markdown("##### 📈 Summary Statistics")
-    if st.button("Show Describe Table"):
-        st.dataframe(df.describe())
+    st.dataframe(df.describe())
 
 elif page == "Visualization 📊":
     st.subheader("02 Data Visualization 📊")
